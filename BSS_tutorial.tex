@@ -19,7 +19,7 @@
 \DeclareSIUnit\Molar{M}
 \usepackage[italic]{mathastext}
 \graphicspath{{figures/}}
-
+\usepackage{hyperref}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% IMPORTANT USER CONFIGURATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -34,6 +34,7 @@
 
 \author[1*]{Antonia S J S Mey}
 \author[1,2\authfn{1}\authfn{3}]{Lester Hedges}
+\author[1]{Sofia Bariami}
 \author[2\authfn{1}\authfn{4}]{Julien Michel}
 \author[2*]{Christopher Woods}
 \affil[1]{Edinburgh}
@@ -76,79 +77,101 @@
 \maketitle
 
 \begin{abstract}
-This particular document provides a skeleton illustrating key sections for a Tutorial document.
-Please see the sample \texttt{sample-document.tex} in \url{github.com/livecomsjournal/article_templates/templates} for additional information on and examples of using the LiveCoMS LaTeX class.
-Here we also assume familiarity with LaTeX and knowledge of how to include figures, tables, etc.; if you want examples, see the sample just referenced.
-
-In your work, in this particular slot, please provide an abstract of no more than 250 words.
-Your abstract should explain the main contributions of your article, and should not contain any material that is not included in the main text.
-Please note that your abstract, plus the authorship material following it, must not extend beyond the title page or modifications to the LaTeX class will likely be needed.
+BioSimSpace is an interoperable molecular simulation framework providing a uniform Python API for common molecular simulation packages such as Gromacs, NAMD, SOMD, and AMBER. This tutorial introduces different aspects of the API from basic simulation setup to more advanced types of simulations such as alchemical free energy simulations, as well as metadynamics simulations. 
 \end{abstract}
 
 \end{frontmatter}
 
 
 
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Introduction
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
+\label{sec:intro}
+BioSimSpace(BSS) is....
 
-Here you would explain what problem you are tackling and briefly motivate your work.
-
-In this particular template, we have removed most of the usage examples which occur in \texttt{sample-document.tex} to provide a minimal template you can modify; however, we retain a couple of examples illustrating more unusual features of our templates/article class, such as the checklists, and information on algorithms and pseudocode.
-
-\subsection{Scope}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Scope
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Scope}
+\label{sec:scope}
 
 Tutorials should endeavor to cover the specific task at hand, and also highlight how the steps might need to be modified (or additional care might need to be taken at particular points) to handle more general cases.
 
 The scope of the tutorial, as well as the expected proficiencies / outcomes for researchers who complete the tutorial, should be clearly defined.
 This will often happen in a specific section or subsection in the article itself.
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Prerequisites
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Prerequisites}
-
-Here you would identify prerequisites/background knowledge that are assumed by your work, as well as any software/license requirements.
+\label{sec:prerequisites}
+The user is expected to have installed BioSimSpace version 2019.2 
 
 \subsection{Background knowledge}
-Tutorials should clearly define what concepts or abilities researchers will need to complete the tutorial (e.g., some proficiency in Python; experience with Jupyter notebooks; knowledge of classical MD; etc).
+\label{subsec:background}
+The tutorials can be run in different ways, either as command line tools from a Unix terminal, or as part of a Jupyter notebook. Familiarity with either or both is assumed. While BSS provides a high level layer around molecular simualtion software it is still useful to have basic ideas on how molecular dynamics simulations work. As a starting point we recommend 
 
-\subsection{Software/system requirements}
-Tutorials should clearly define what system and/or software requirements the researcher will need to complete the tutorial (e.g., VMD version 1.9 or newer, AMBER, etc.). Tutorials requiring specific software packages must provide instructions and files for the referenced version of the software.
+\subsection{Software/system requirements and installation}
+\label{subsec:software}
+\todo[inline, color={red!20}]{@Lester please write section}
+Gromacs~\cite{}, Ambertools~\cite{}, OpenMM~\cite. Optional: Amber~\cite{}, 
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Prerequisites
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Content and links}
+\label{sec:content}
+All files needed for the tutorial can be found at \url{my/custom/url}
 
-A tutorial will normally draw on additional files and materials; clearly indicate where and how these are available, with links, and how they are being archived for the long-term and maintained so they stay current.
-You will likely want to reference your GitHub repository as a central point to access all of this information, and then the GitHub repository may link out to other content as needed.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Basic tutorials
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Basic BioSimSpace tutorials}
+\label{sec:basic_tutorial}
+BioSimSpace has a very versatile Python API that allows not just to write typical molecular dynamics simulation and analysis workflow, but can also be used for simple tasks such as converting between different MD file types. In the basic tutorial section file conversions, molecular simualtion setup, including parametrisation, minimisation and equilibration as well as running MD simulations will be covered. 
 
-\section{Checklists}
-Tutorials do not necessarily require the use of a checklist as in Best Practices documents; however, they can include these if desired.
-Several useful checklist formats are available, with examples presented in \texttt{sample-document.tex} in \url{github.com/livecomsjournal/article_templates/templates}.
-One example is shown here.
+\subsection{Conversions}
+\label{subsec:conversion}
+\todo[inline, color={red!20}]{@Toni please write section}
 
-% Here is a single-column checklist that consists of multiple sub-checklists
-\begin{Checklists}
+\subsection{Simulation setup}
+\label{subsec:setup}
 
-\begin{checklist}{A list}
-\textbf{Single-column checklists are also straightforward by removing the asterisk}
-\begin{itemize}
-\item First thing let's do an item which breaks across lines to see how that looks
-\item Also remember
-\item And finally
-\end{itemize}
-\end{checklist}
+\subsubsection{Parametrisation and Solvation}
+\todo[inline, color={red!20}]{@Sofia please write section}
 
-\begin{checklist}{Another list}
-\textbf{This is some further description.}
-\begin{itemize}
-\item First thing
-\item Also remember
-\item And finally
-\end{itemize}
-\end{checklist}
+\subsubsection{Minimisation}
+\todo[inline, color={red!20}]{@Sofia please write section}
 
-\end{Checklists}
+\subsubsection{Equilibration}
+\todo[inline, color={red!20}]{@Sofia please write section}
 
 
+\subsection{Running and analysing MD simulations}
+\label{subsec:running_MD}
+\todo[inline, color={red!20}]{@Toni please write section}
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% Advanced tutorials
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Advanced BioSimSpace tutorials}
+\label{sec:advanced_tutorial}
 
+\subsection{Alchemical Free Energy calculations}
+\todo[inline, color={red!20}]{@Toni please write section}
+\todo[inline, color={red!20}]{@Sofia, @Cameron please review section}
+
+\subsection{Metadynamics}
+\todo[inline, color={red!20}]{@Lester/Toni/Dom please write section}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%% API specifics
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Working with the API}
+\label{sec:API_tutorial}
+\todo[inline, color={red!20}]{@Lester please write section}
 
 
 
@@ -198,12 +221,12 @@ Declare any potentially conflicting interests here, whether or not they pose an 
 %%%%%%%
 % Authors should acknowledge funding sources here. Reference specific grants.
 %%%%%%%
-FMS acknowledges the support of NSF grant CHE-1111111.
+ASJSM, JM, LOH, and CW acknowledge funding through an EPSRC flagship software grant: EP/P022138/1
 
 \section*{Author Information}
 \makeorcid
 
-\bibliography{livecoms-sample}
+\bibliography{bss_tutorial}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% APPENDICES
