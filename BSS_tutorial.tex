@@ -23,8 +23,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% IMPORTANT USER CONFIGURATION
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\newcommand{\versionnumber}{1.3}  % you should update the minor version number in preprints and major version number of submissions.
+\usepackage[colorinlistoftodos]{todonotes}
+\newcommand{\versionnumber}{1.0}  % you should update the minor version number in preprints and major version number of submissions.
 \newcommand{\githubrepository}{\url{https://github.com/myaccount/homegithubrepository}}  %this should be the main github repository for this article
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -89,18 +89,26 @@ BioSimSpace is an interoperable molecular simulation framework providing a unifo
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Introduction}
 \label{sec:intro}
-BioSimSpace(BSS) is....
+Molecular dynamics (MD) simulations are a widely used tool to get atomistic insight into the behavior of biological and soft matter systems, making important contributions to structural biology, pharmaceutical research, as well as material sciences~\cite{huggins2019biomolecular, rountree2002atomistic}. A vast array of different software tools are available to run and analyse MD simulations. This means as a new practitioner it is oftentimes quite difficult to get started with what software package to use for what scientific question. 
+BioSimSpace(BSS) was designed in aid to alleviate this problem by trying to provide an interoperable versatile software frame work that can be easily adapted for the specific purpose required~\cite{hedges2019biosimspace}. It provides a common python API that will allow to run and analyse different types of MD simulations in a simulation platform agnostic way. This means that the same python script or command line tool can be used to run a simulation using Gromacs~\cite{vanderspoel2005gromacs}, AMBER~\cite{}, OpenMM~\cite{eastman2017openmm}, or NAMD~\cite{phillips2005scalable}. As part of BSS it is also possible to readily convert between different file formats supported across these common simulation platforms. Furthermore, it also aims to implement common best practices for setting simulation parameters making it less confusing for new practitioners who may not understand the zoo of possible parameters that can be set for a given simulation package. Another aspect is the level of abstraction introduced to run complex simulation such as alchemical free energy calculations~\cite{} of binding or metadynamics simualtions~\cite{}. This document aims to give an introduction on how to use BSS in conjunction with different software packages to perform different types of molecular dynamics simulation of varying difficulty.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Scope
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Scope}
 \label{sec:scope}
+The document is divided into three tutorial sections. The basic BSS tutorial section~\ref{sec:basic_tutorial} introduces the software, how to run it using different interfaces such as a command-line approach or within a jupyter notebook. In section~\ref{sec:basic_tutorial} the user is slowly introduced to concepts of different complexity, starting with a simple question such as, how can I convert my Gromacs files, such that I can run them with AMBER convert in sec.~\ref{subsec:conversion}. Then through a series of steps the user is shown how to setup (sec.~\ref{subsec:setup} and run~\ref{subsec:running_MD} a basic molecular dynamics simulation. These steps are:
+\begin{enumerate}
+\item Parametrise the system 
+\item Solvate the system
+\item minimise the system
+\item Equilibration
+\item Running a molecular dynamics simulation of the solvated box
+\end{enumerate}
+After having completed the sec. ~\ref{subsec:setup} the user should be able to setup an unknown small molecule or protein in a solvent box for any of the supported MD simulation engines, either using a command-line interface or a jupyter notebook. They should be able to adjust simple simulation parameters such as the nuymber of minimisation steps, or how long the simulation should be run for. The user should also be able understand how to do some basic troubleshooting with provided error messages. 
+Sec.~\ref{subsec:running_MD} illustrates how to actually run an MD simulation, adjust simulation lengths and reporting intervals. It also covers how simulations can be monitored 'on the fly' in a jupyter notebook environment with simple graph analyses and snapshots. 
 
-Tutorials should endeavor to cover the specific task at hand, and also highlight how the steps might need to be modified (or additional care might need to be taken at particular points) to handle more general cases.
 
-The scope of the tutorial, as well as the expected proficiencies / outcomes for researchers who complete the tutorial, should be clearly defined.
-This will often happen in a specific section or subsection in the article itself.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%% Prerequisites
@@ -111,7 +119,7 @@ The user is expected to have installed BioSimSpace version 2019.2
 
 \subsection{Background knowledge}
 \label{subsec:background}
-The tutorials can be run in different ways, either as command line tools from a Unix terminal, or as part of a Jupyter notebook. Familiarity with either or both is assumed. While BSS provides a high level layer around molecular simualtion software it is still useful to have basic ideas on how molecular dynamics simulations work. As a starting point we recommend 
+The tutorials can be run in different ways, either as command line tools from a Unix terminal, or as part of a Jupyter notebook. Familiarity with either or both is assumed. While BSS provides a high level layer around molecular simulation software it is still useful to have basic ideas on how molecular dynamics simulations work. As a starting point we recommend 
 
 \subsection{Software/system requirements and installation}
 \label{subsec:software}
@@ -130,7 +138,7 @@ All files needed for the tutorial can be found at \url{my/custom/url}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Basic BioSimSpace tutorials}
 \label{sec:basic_tutorial}
-BioSimSpace has a very versatile Python API that allows not just to write typical molecular dynamics simulation and analysis workflow, but can also be used for simple tasks such as converting between different MD file types. In the basic tutorial section file conversions, molecular simualtion setup, including parametrisation, minimisation and equilibration as well as running MD simulations will be covered. 
+BioSimSpace has a very versatile Python API that allows not just to write typical molecular dynamics simulation and analysis workflow, but can also be used for simple tasks such as converting between different MD file types. In the basic tutorial section file conversions, molecular simulation setup, including parametrisation, minimisation and equilibration as well as running MD simulations will be covered. 
 
 \subsection{Conversions}
 \label{subsec:conversion}
