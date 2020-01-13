@@ -140,7 +140,10 @@ All files needed for the tutorial can be found at \url{my/custom/url}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \section{Basic BioSimSpace tutorials}
 \label{sec:basic_tutorial}
-BioSimSpace has a very versatile Python API that allows not just to write typical molecular dynamics simulation and analysis workflow, but can also be used for simple tasks such as converting between different MD file types. In the basic tutorial section file conversions, molecular simulation setup, including parametrisation, minimisation and equilibration as well as running MD simulations will be covered. 
+BioSimSpace has a very versatile Python API that allows not just to write typical molecular dynamics simulation and analysis workflow, but can also be used for simple tasks such as converting between different MD file types. In the basic tutorial section file conversions, molecular simulation setup, including parametrisation, minimisation and equilibration as well as running MD simulations will be covered. \\
+
+\textbf{@@@@@@@@@@@ Sofia inserted:} \\
+At the tutorials to follow, the Jupyter notebook layout will be used, and the Node object will be the core of our molecular workflow component. Nodes define the input that is needed, and the output that is produced.
 
 \subsection{Conversions}
 \label{subsec:conversion}
@@ -149,15 +152,168 @@ BioSimSpace has a very versatile Python API that allows not just to write typica
 \subsection{Simulation setup}
 \label{subsec:setup}
 
+The first and certainly most important step to run an MD simulation is to set the system correctly. This set up is typically consisted of three steps: i) The system parameterisation and solvation, ii) the energy minimisation and iii) the system equilibration. More specifically, the system of interest should be parameterised with the appropriate forcefield and then solvated. To remove any potential intermolecular atom clashes and minimise the forces between the atoms, an energy minimisation should be conducted. Finally with NVT and NPT equilibration the system is relaxed, the solvent molecules are rearranged around the solute, and both the temperature and the pressure are set to the desirable values. At the following sub-sections we will show how to run these processes with BSS. At the end, we will have a robust and interoperable workflow to generate a molecular system ready for simulation with AMBER.
+
 \subsubsection{Parametrisation and Solvation}
 \todo[inline, color={red!20}]{@Sofia please write section}
+In this tutorial the parameterisation and solvation of Hsp90 alpha ATPase domain (2JJC.pdb) will be demonstrated. We are going to use the ff14SB forcefield and the TIP3P water model. \\
+
+First we need to import BioSimSpace, create a Node object and set the author and license. 
+
+\begin{verbatim}
+import BioSimSpace as BSS
+node = BSS.Gateway.Node("A node to parameterise and 
+solvate a molecule ready for molecular simulation
+with AMBER.")
+
+node.addAuthor(name="Lester Hedges", 
+email="lester.hedges@bristol.ac.uk", 
+affiliation="University of Bristol")
+
+node.setLicense("GPLv3")
+\end{verbatim}
+Nodes require inputs. To specify inputs we use the Gateway module, which is used as a bridge between BioSimSpace and the outside world. This will allow us to document the inputs, define their type, and specify any constraints on their allowed values.
+\begin{verbatim}
+node.addInput("file", BSS.Gateway.File(help="A 
+molecular input file, e.g. a PDB file."))
+
+node.addInput("forcefield", BSS.Gateway.String(help=
+"The name of the force field to use for param/tion.",
+allowed=BSS.Parameters.forceFields(),
+default="ff14SB"))
+ 
+node.addInput("water", BSS.Gateway.String(help=
+"The name of the water model to use for solvation.", 
+allowed=BSS.Solvent.waterModels(), default="tip3p"))
+
+node.addInput("box_size", BSS.Gateway.Length(help=
+"The base length of the cubic simulation box.",
+unit="nanometer"))
+
+node.addInput("ion_conc", BSS.Gateway.Float(help="The
+ionic concentration in mol/litre.",minimum=0, 
+maximum=1, default=0))
+\end{verbatim}
+
+We also need to define the output of the node. In this case we will return a set of AMBER format files for the parameterised and solvated system.
+
+\begin{verbatim}
+node.addOutput("system", BSS.Gateway.FileSet(help=
+"The parameterised and solvated molecular system 
+in AMBER format."))
+\end{verbatim}
+
+The input files can be set with the help of the Graphical User Interface (GUI) that Jupyter notebooks provide. The \texttt{node.showControls()}
+method, will display this GUI from which inputs can be set actively by the user. All input requirements that don't have a default value must be set before the node can proceed. An error will be raised if you try to query the node for one of the user values. Files from your local system can be uploaded through the GUI. Jupyter has a limit of 5MB for file transfers, but support for compressed formats, such as \texttt{.zip} or \texttt{.tar.gz} is provided. The input files can then be accessed using the \texttt{node.getInput()} method. The first time this is called the node will automatically validate all of the input and report the user if any errors were found. \\
+
+BioSimSpace has support for a wide range of formats and can convert between certain formats too. It can also automatically determine the format of the file that is uploaded, so we do not need to specify it. To create a molecular system we just need to call the \texttt{readMolecules()} function: 
+
+\begin{verbatim}
+system = BSS.IO.readMolecules(node.getInput("file"))
+\end{verbatim}
+
+Now, we need to grab the molecule from the system and parameterise it. We do so by calling the parameterise function from the BSS.Parameters package, passing the molecule and force field name as arguments. Since parameterisation can be slow, the function returns a handle to a process that runs the parameterisation in the background. To get the parameterised molecule from the process we need to call the \texttt{getMolecule} method. This is a blocking operation which waits for the process to finish before grabbing the molecule and returning it.
+
+\begin{verbatim}
+molecule = system[0]
+molecule = BSS.Parameters.parameterise(molecule,
+node.getInput("forcefield")).getMolecule()
+\end{verbatim}
+
+Next we will solvate the molecule in a box of water using the \texttt{solvate} function from the BSS.Solvent package. This will centre the molecule in a cubic box of a specified size and surround it by water molecules. The user can specify the size of the box and the ionic strength. By default, the resulting system will also be neutralised.
+
+\begin{verbatim}
+system = BSS.Solvent.solvate(node.getInput("water"),
+molecule=molecule,box=3 *[node.getInput("box_size")],
+ion_conc=node.getInput("ion_conc"))
+\end{verbatim}
+
+To save the solvated system, we will use the \texttt{saveMolecules()} function. This function allows the user to define the file format of the output. Here we will return a set of AMBER format files representing the parameterised and solvated molecular system. 
+
+\begin{verbatim}
+node.setOutput("system", BSS.IO.saveMolecules
+("system", system, ["prm7", "rst7"]))
+\end{verbatim}
+
+Finally, we validate that the node completed successfully. This will check that all output requirements are satisfied and that no errors were raised by the user. Any file outputs will be available for the user to download as a compressed archive.
+
+\begin{verbatim}
+node.validate()
+\end{verbatim}
+
+Once we are satisfied with our node we can choose to download it as a regular Python script that can be run from the command-line, by clicking on: \texttt{File/Download As/Python}
 
 \subsubsection{Minimisation}
 \todo[inline, color={red!20}]{@Sofia please write section}
 
+Since we have parameterised and solvated our molecular system, energy minimisation is next on the list. Given that we have already set our files, as described at the previous subsection, we should now set an integer that indicates the number of minimisation steps to perform. Note that he input requirement steps has a default value, so it is optional.
+
+\begin{verbatim}
+node.addInput("steps", BSS.Gateway.Integer(help=
+"The number of minimisation steps.", minimum=0,
+maximum=1000000, default=10000))
+\end{verbatim}
+
+We now need to define the output of the node. In this case we will return a set of files representing the minimised molecular system.
+
+\begin{verbatim}
+node.addOutput("minimised", BSS.Gateway.FileSet(help=
+"The minimised molecular system."))
+\end{verbatim}
+
+In order to run a minimisation, a protocol needs to be defined. When defining a protocol we are configuring the type of simulation that we wish to run, as well as any options for the particular simulation. This can be done using the \texttt{BioSimSpace.Protocol} module.  Then, to run the protocol, we need to find an appropriate molecular dynamics package on our current environment. What package is found will depend upon both the system and protocol, as well as the hardware that is available to the user. We will use \texttt{BioSimSpace.MD} to find the appropriate MD package: 
+
+\begin{verbatim}
+protocol = BSS.Protocol.Minimisation
+(steps=node.getInput("steps"))
+process = BSS.MD.run(system, protocol)
+\end{verbatim}
+
+We can get the minimised molecular configuration once the process has finished running. This will be saved to a file using the same format as the original system, and the name that we provide. Note that we pass \texttt{block=True} to \texttt{getSystem}. Since we're working interactively the process is running in the background and \texttt{getSystem} will grab and return the latest molecular configuration. By passing \texttt{block=True} we wait for the process to finish before getting the final configuration and writing it to file. 
+
+\begin{verbatim}
+node.setOutput("minimised", BSS.IO.saveMolecules
+("minimised", process.getSystem(block=True),
+system.fileFormat()))
+\end{verbatim}
+
+Finally, we validate again that the node completed successfully, as we have done after the solvation of the system.
+
+\begin{verbatim}
+node.validate()
+\end{verbatim}
+
 \subsubsection{Equilibration}
 \todo[inline, color={red!20}]{@Sofia please write section}
 
+Before running the final MD simulation, we need to equilibrate our molecular system to a target temperature. Following a similar process as the one for minimisation, we need to define an equilibration protocol. To initialise the default BSS equilibration protocol, we call \texttt{protocol = BSS.Protcol.Equilibration()}: 
+\begin{verbatim}
+protocol = BSS.Protocol.Equilibration(
+runtime=0.05*BSS.Units.Time.nanosecond, 
+temperature_start=0*BSS.Units.Temperature.kelvin, 
+temperature_end=300*BSS.Units.Temperature.kelvin, 
+restrain_backbone=True)
+\end{verbatim}
+
+We now have everything that is needed to create a process object.
+\begin{verbatim}
+process = BSS.MD.run(system, protocol)
+\end{verbatim}
+
+The time, temperature, and energy can be monitored as the process runs: 
+\begin{verbatim}
+print(process.getTime(), process.getTemperature(),
+process.getTotalEnergy())
+\end{verbatim}
+We can also check if the process is running: \texttt{process.isRunning()} and  how many minutes the process has been running for: \texttt{process.runTime()}.
+
+After the process has finished running, we can save the equilibrated system and finally validate the node: 
+\begin{verbatim}
+node.setOutput("equilibrated", BSS.IO.saveMolecules
+("equilibrated", process.getSystem(block=True),
+system.fileFormat()))
+node.validate()
+\end{verbatim}
 
 \subsection{Running and analysing MD simulations}
 \label{subsec:running_MD}
